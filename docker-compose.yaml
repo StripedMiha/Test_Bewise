@@ -1,0 +1,47 @@
+version: "3.9"
+
+volumes:
+  bd_data:
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:13
+    restart: always
+    environment:
+      - POSTGRES_DB=test_bewise
+      - PGDATA=/var/lib/postgresql/data/pg_data
+      - TZ=Europe/Moscow
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_pass
+    volumes:
+      - bd_data:/var/lib/postgresql/data
+    ports:
+      - "5532:5432"
+    secrets:
+      - db_pass
+    networks:
+      - postgres
+
+
+  api:
+    container_name: api
+    build: web/
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_pass
+    ports:
+      - "4400:4000"
+    secrets:
+      - db_pass
+    networks:
+      - postgres
+
+
+secrets:
+  db_pass:
+    file: secret_password.txt
+
+
+networks:
+  postgres:
+    driver: bridge
