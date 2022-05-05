@@ -30,12 +30,13 @@ async def check_question(list_id: list[int], question: dict) -> Question:
 async def add_questions(questions_num: int = 1, session: Session = Depends(get_session)):
     result = session.execute(select(Question).order_by(desc(Question.added_date)))
     last_questions: Optional[Question] = result.scalars().first()
-
-    questions: list[dict] = await get_questions(questions_num)
-    result = session.execute(select(Question.question_id))
-    questions_id: list[int] = result.scalars().all()
-    for question in questions:
-        checked_question: Question = await check_question(questions_id, question)
-        session.add(checked_question)
-    session.commit()
+    while questions_num > 0:
+        questions: list[dict] = await get_questions(questions_num)
+        result = session.execute(select(Question.question_id))
+        questions_id: list[int] = result.scalars().all()
+        for question in questions:
+            checked_question: Question = await check_question(questions_id, question)
+            session.add(checked_question)
+        session.commit()
+        questions_num -= len(questions)
     return last_questions

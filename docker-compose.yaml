@@ -24,13 +24,13 @@ services:
 
 
   api:
-    container_name: api
+    container_name: questions_api
     build: web/
     restart: always
     environment:
       - POSTGRES_PASSWORD_FILE=/run/secrets/db_pass
     ports:
-      - "4400:4000"
+      - "4600:4000"
     secrets:
       - db_pass
     networks:

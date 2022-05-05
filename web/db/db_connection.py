@@ -1,17 +1,13 @@
 import os
 
-from sqlmodel import create_engine, SQLModel, Session
+from sqlmodel import create_engine, Session
 
 path = os.getenv("POSTGRES_PASSWORD_FILE")
 with open(path, 'r') as inf:
-    DB_PASSWORD = inf.read()
+    DB_PASSWORD = inf.read().strip('\n').strip(' ')
 DATABASE_URL = f"postgresql+psycopg2://postgres:{DB_PASSWORD}@postgres_container/test_bewise"
 
 engine = create_engine(DATABASE_URL, echo=True)
-
-
-# def init_db():
-#     SQLModel.metadata.create_all(engine)
 
 
 def get_session():
